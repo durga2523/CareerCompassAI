@@ -12,10 +12,12 @@ spring.jpa.properties.hibernate.format_sql=true
 
 jwt.secret=${JWT_SECRET}
 
-#AI properties
-
+# AI Properties
 spring.ai.google.genai.api-key=${GEMINI_API_KEY}
-#spring.ai.google.genai.chat.options.model=gemini-2.5-flash
 spring.ai.google.genai.chat.options.model=gemini-flash-latest
 spring.ai.google.genai.chat.options.temperature=0.3
 
+spring.servlet.multipart.max-file-size=10MB
+spring.servlet.multipart.max-request-size=10MB
+
+file.upload-dir=uploads
