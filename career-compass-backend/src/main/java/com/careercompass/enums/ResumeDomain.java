@@ -1,0 +1,14 @@
+package com.careercompass.enums;
+
+public enum ResumeDomain {
+    JAVA_DEVELOPER,
+    PYTHON_DEVELOPER,
+    FULL_STACK_DEVELOPER,
+    FRONTEND_DEVELOPER,
+    BACKEND_DEVELOPER,
+    DATA_ANALYST,
+    DATA_SCIENTIST,
+    DEVOPS_ENGINEER,
+    UI_UX_DESIGNER,
+    UNKNOWN
+}

@@ -1,0 +1,181 @@
+package com.careercompass.service.impl;
+
+import com.careercompass.dto.*;
+import com.careercompass.entity.Resume;
+import com.careercompass.entity.User;
+import com.careercompass.enums.ResumeDomain;
+import com.careercompass.repository.ResumeRepository;
+import com.careercompass.repository.UserRepository;
+import com.careercompass.service.FileStorageService;
+import com.careercompass.service.ResumeService;
+import com.careercompass.service.ai.*;
+import com.careercompass.util.PdfParserUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+
+@Service
+public class ResumeServiceImpl implements ResumeService {
+
+    @Autowired
+    private ResumeRepository resumeRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private FileStorageService fileStorageService;
+
+    @Autowired
+    private SkillExtractionService skillExtractionService;
+
+    @Autowired
+    private DomainDetectionService domainDetectionService;
+
+    @Autowired
+    private AtsScoringService atsScoringService;
+
+    @Autowired
+    private JobMatchingService jobMatchingService;
+
+    @Autowired
+    private SuggestionService suggestionService;
+
+    @Autowired
+    private AIService aiService;
+
+    @Override
+    public Resume uploadResume(MultipartFile file, Long userId) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() ->
+                        new RuntimeException("User not found with ID: " + userId));
+
+        String filePath = fileStorageService.uploadFile(file);
+        String resumeText = PdfParserUtil.extractText(file);
+        Resume resume = Resume.builder()
+                .fileName(file.getOriginalFilename())
+                .fileType(file.getContentType())
+                .filePath(filePath)
+                .resumeText(resumeText)
+                .uploadedAt(LocalDateTime.now())
+                .user(user)
+                .build();
+        System.out.println("===== Extracted Resume Text =====");
+        System.out.println(resumeText);
+
+
+        List<String> skills =
+                skillExtractionService.extractSkills(resumeText);
+        System.out.println("===== Skills =====");
+        skills.forEach(System.out::println);
+        System.out.println("===== Resume Text =====");
+        System.out.println(resumeText);
+
+        return resumeRepository.save(resume);
+    }
+    @Override
+    public List<Resume> getAllResumes() {
+
+        return resumeRepository.findAll();
+    }
+
+    @Override
+    public Optional<Resume> getResumeById(Long id) {
+
+        return resumeRepository.findById(id);
+    }
+
+    @Override
+    public void deleteResume(Long id) {
+
+        resumeRepository.deleteById(id);
+    }
+
+    @Override
+    public JobMatchResponse matchJobDescription(Long id,
+                                                JobDescriptionRequest request) {
+
+        Resume resume = resumeRepository.findById(id)
+                .orElseThrow(() ->
+                        new RuntimeException("Resume not found"));
+
+        // Read resume text
+        String resumeText = PdfParserUtil.extractText(resume.getFilePath());
+
+        // Extract resume skills
+        List<String> resumeSkills =
+                skillExtractionService.extractSkills(resumeText);
+
+        // Extract JD skills
+        List<String> jobSkills =
+                        skillExtractionService.extractSkills(request.getJobDescription());
+
+        // Compare
+        return jobMatchingService.compareSkills(
+                resumeSkills,
+                jobSkills
+        );
+    }
+
+    @Override
+    public AIResumeAnalysisResponse analyzeResume(Long resumeId) {
+
+        Resume resume = resumeRepository.findById(resumeId)
+                .orElseThrow(() ->
+                        new RuntimeException("Resume not found"));
+
+        System.out.println("========== RESUME SERVICE ==========");
+        System.out.println("Resume ID : " + resumeId);
+        System.out.println("Resume Text : ");
+        System.out.println(resume.getResumeText());
+        System.out.println("====================================");
+
+        String resumeText = resume.getResumeText();
+
+        return aiService.analyzeResume(resumeText);
+    }
+
+    @Override
+    public ResumeDetailsResponse getResumeDetails(Long id) {
+
+        Resume resume = resumeRepository.findById(id)
+                .orElseThrow(() ->
+                        new RuntimeException("Resume not found"));
+
+     //  String resumeText = PdfParserUtil.extractText(resume.getFilePath());
+
+        String resumeText = resume.getResumeText();
+
+        ResumeDomain domain = domainDetectionService.detectDomain(resumeText);
+        System.out.println("Detected Domain : " + domain);
+
+        List<String> skills =
+                skillExtractionService.extractSkills(resumeText);
+
+        AtsScoreResponse ats =
+                atsScoringService.calculateScore(domain, skills);
+
+        System.out.println("===== ATS SCORE =====");
+        System.out.println("Score : " + ats.getScore());
+
+        System.out.println("Strengths:");
+        ats.getStrengths().forEach(System.out::println);
+
+        System.out.println("Missing Skills:");
+        ats.getMissingSkills().forEach(System.out::println);
+
+        return ResumeDetailsResponse.builder()
+                .id(resume.getId())
+                .fileName(resume.getFileName())
+                .fileType(resume.getFileType())
+                .filePath(resume.getFilePath())
+                .resumeText(resumeText)
+                .skills(skills)
+                .build();
+    }
+}

@@ -1,0 +1,23 @@
+# IntelliJ
+.idea/
+*.iml
+
+# React
+career-compass-frontend/node_modules/
+career-compass-frontend/dist/
+
+# Java
+career-compass-backend/target/
+
+# Environment
+.env
+
+# Logs
+*.log
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# Zip Files
+*.zip
