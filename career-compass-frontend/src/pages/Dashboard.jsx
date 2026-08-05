@@ -101,7 +101,7 @@ function Dashboard() {
             setLoading(true);
 
             const uploadResponse = await axios.post(
-                "http://localhost:8080/api/resumes/upload",
+                "https://career-compass-backend-fxzr.onrender.com/api/resumes/upload",
                 formData,
                 {
                     headers: {
@@ -114,7 +114,7 @@ function Dashboard() {
             const resumeId = uploadResponse.data.id;
 
             const aiResponse = await axios.post(
-                `http://localhost:8080/api/resumes/${resumeId}/ai-analysis`,
+                `https://career-compass-backend-fxzr.onrender.com/api/resumes/${resumeId}/ai-analysis`,
                 {},
                 {
                     headers: {

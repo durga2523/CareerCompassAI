@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = "http://localhost:8080/api/resumes";
+const BASE_URL = "https://career-compass-backend-fxzr.onrender.com/api/resumes";
 
 const getAuthHeader = () => ({
     headers: {
