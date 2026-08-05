@@ -2,14 +2,19 @@ package com.careercompass.service.impl;
 
 import com.careercompass.dto.*;
 import com.careercompass.entity.Resume;
+import com.careercompass.entity.ResumeAnalysis;
 import com.careercompass.entity.User;
 import com.careercompass.enums.ResumeDomain;
+import com.careercompass.repository.ResumeAnalysisRepository;
 import com.careercompass.repository.ResumeRepository;
 import com.careercompass.repository.UserRepository;
 import com.careercompass.service.FileStorageService;
 import com.careercompass.service.ResumeService;
 import com.careercompass.service.ai.*;
+import com.careercompass.util.JwtUtil;
+import com.careercompass.util.ListConverter;
 import com.careercompass.util.PdfParserUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -48,13 +53,32 @@ public class ResumeServiceImpl implements ResumeService {
     @Autowired
     private AIService aiService;
 
+    @Autowired
+    private ResumeAnalysisRepository resumeAnalysisRepository;
+
+    @Autowired
+    private JwtUtil jwtUtil;
+
     @Override
-    public Resume uploadResume(MultipartFile file, Long userId) {
+    public Resume uploadResume(
+            MultipartFile file,
+            HttpServletRequest request) {
 
-        User user = userRepository.findById(userId)
-                .orElseThrow(() ->
-                        new RuntimeException("User not found with ID: " + userId));
+        String authHeader = request.getHeader("Authorization");
 
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            throw new RuntimeException("Missing or invalid Authorization header");
+        }
+
+        String token = authHeader.substring(7);
+
+        String email = jwtUtil.extractEmail(token);
+
+        User user = userRepository.findByEmail(email);
+
+        if (user == null) {
+            throw new RuntimeException("User not found");
+        }
         String filePath = fileStorageService.uploadFile(file);
         String resumeText = PdfParserUtil.extractText(file);
         Resume resume = Resume.builder()
@@ -65,16 +89,16 @@ public class ResumeServiceImpl implements ResumeService {
                 .uploadedAt(LocalDateTime.now())
                 .user(user)
                 .build();
-        System.out.println("===== Extracted Resume Text =====");
-        System.out.println(resumeText);
+       // ===== Extracted Resume Text =====
+
 
 
         List<String> skills =
                 skillExtractionService.extractSkills(resumeText);
-        System.out.println("===== Skills =====");
-        skills.forEach(System.out::println);
-        System.out.println("===== Resume Text =====");
-        System.out.println(resumeText);
+//        System.out.println("===== Skills =====");
+//        skills.forEach(System.out::println);
+//        System.out.println("===== Resume Text =====");
+
 
         return resumeRepository.save(resume);
     }
@@ -88,6 +112,13 @@ public class ResumeServiceImpl implements ResumeService {
     public Optional<Resume> getResumeById(Long id) {
 
         return resumeRepository.findById(id);
+    }
+
+    @Override
+    public List<Resume> getResumesByUser(Long userId) {
+
+        return resumeRepository.findByUserIdOrderByUploadedAtDesc(userId);
+
     }
 
     @Override
@@ -129,15 +160,63 @@ public class ResumeServiceImpl implements ResumeService {
                 .orElseThrow(() ->
                         new RuntimeException("Resume not found"));
 
-        System.out.println("========== RESUME SERVICE ==========");
-        System.out.println("Resume ID : " + resumeId);
-        System.out.println("Resume Text : ");
-        System.out.println(resume.getResumeText());
-        System.out.println("====================================");
+//        System.out.println("========== RESUME SERVICE ==========");
+//        System.out.println("Resume ID : " + resumeId);
+//        System.out.println("Resume Text : ");
+//        System.out.println(resume.getResumeText());
 
         String resumeText = resume.getResumeText();
 
-        return aiService.analyzeResume(resumeText);
+        AIResumeAnalysisResponse response =
+                aiService.analyzeResume(resumeText);
+
+        ResumeAnalysis analysis = resumeAnalysisRepository
+                .findByResume(resume)
+                .orElse(new ResumeAnalysis());
+
+        analysis.setResume(resume);
+        analysis.setAtsScore(response.getAtsScore());
+        analysis.setResumeSummary(response.getResumeSummary());
+        analysis.setDetectedSkills(
+                ListConverter.toString(response.getDetectedSkills()));
+        analysis.setMissingSkills(
+                ListConverter.toString(response.getMissingSkills()));
+        analysis.setRecommendations(
+                ListConverter.toString(response.getRecommendations()));
+
+        resumeAnalysisRepository.save(analysis);
+
+        return response;
+    }
+
+    @Override
+    public AIResumeAnalysisResponse getSavedAnalysis(Long resumeId) {
+
+//        System.out.println("GET SAVED ANALYSIS CALLED");
+//        System.out.println("Resume ID = " + resumeId);
+
+        Resume resume = resumeRepository.findById(resumeId)
+                .orElseThrow(() ->
+                        new RuntimeException("Resume not found"));
+
+        ResumeAnalysis analysis = resumeAnalysisRepository
+                .findByResume(resume)
+                .orElseThrow(() ->
+                        new RuntimeException("Analysis not found"));
+
+        return AIResumeAnalysisResponse.builder()
+                .atsScore(analysis.getAtsScore())
+                .resumeSummary(analysis.getResumeSummary())
+                .detectedSkills(
+                        ListConverter.toList(
+                                analysis.getDetectedSkills()))
+                .missingSkills(
+                        ListConverter.toList(
+                                analysis.getMissingSkills()))
+                .recommendations(
+                        ListConverter.toList(
+                                analysis.getRecommendations()))
+                .build();
     }
 
     @Override
@@ -160,13 +239,13 @@ public class ResumeServiceImpl implements ResumeService {
         AtsScoreResponse ats =
                 atsScoringService.calculateScore(domain, skills);
 
-        System.out.println("===== ATS SCORE =====");
-        System.out.println("Score : " + ats.getScore());
+//        System.out.println("===== ATS SCORE =====");
+//        System.out.println("Score : " + ats.getScore());
 
-        System.out.println("Strengths:");
+ //       System.out.println("Strengths:");
         ats.getStrengths().forEach(System.out::println);
 
-        System.out.println("Missing Skills:");
+//        System.out.println("Missing Skills:");
         ats.getMissingSkills().forEach(System.out::println);
 
         return ResumeDetailsResponse.builder()

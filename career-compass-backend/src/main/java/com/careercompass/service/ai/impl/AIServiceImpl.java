@@ -17,29 +17,53 @@ public class AIServiceImpl implements AIService {
     @Override
     public AIResumeAnalysisResponse analyzeResume(String resumeText) {
 
-        System.out.println("========== AI SERVICE START ==========");
-
-        System.out.println("Resume Text:");
-        System.out.println(resumeText);
-
         String prompt = """
-Analyze this resume in one sentence.
+You are an expert ATS Resume Analyzer.
+
+Analyze the following resume.
+
+Return ONLY a valid JSON object.
+
+The JSON format MUST be exactly:
+
+{
+  "atsScore": 0,
+  "resumeSummary": "",
+  "detectedSkills": [],
+  "missingSkills": [],
+  "recommendations": []
+}
+
+Rules:
+1. atsScore must be between 0 and 100.
+2. resumeSummary must contain 2-3 sentences.
+3. detectedSkills must contain only skills found in the resume.
+4. missingSkills must contain useful industry skills that are missing.
+5. recommendations must contain 5 actionable suggestions.
+6. Do NOT return markdown.
+7. Do NOT wrap the JSON inside ```json```.
+8. Return JSON only.
 
 Resume:
+
 %s
 """.formatted(resumeText);
 
-        String response = chatClient.prompt()
-                .user(prompt)
-                .call()
-                .content();
+        try {
 
-        System.out.println("AI Response:");
-        System.out.println(response);
+            AIResumeAnalysisResponse response = chatClient.prompt()
+                    .user(prompt)
+                    .call()
+                    .entity(AIResumeAnalysisResponse.class);
 
-        System.out.println("========== AI SERVICE END ==========");
+            return response;
 
-        return null;
+        } catch (Exception e) {
+
+            System.out.println("========== AI ERROR ==========");
+            e.printStackTrace();
+
+            throw new RuntimeException("Failed to generate AI analysis.", e);
+        }
     }
-
 }

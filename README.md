@@ -4,6 +4,8 @@
 
 The platform combines **Spring Boot**, **React**, **MySQL**, and **Google Gemini AI** to provide intelligent resume analysis and career guidance.
 
+AI-powered career guidance platform built with Spring Boot, React, MySQL, and Google Gemini AI.
+![Dashboard](screenshots/dashboard.png)
 ---
 
 ## ✨ Features
@@ -18,6 +20,62 @@ The platform combines **Spring Boot**, **React**, **MySQL**, and **Google Gemini
 - 📚 REST APIs with Swagger Documentation
 
 ---
+
+## 📸 Screenshots
+
+### Login Page
+
+![Login](screenshots/login.png)
+
+---
+
+### Register Page
+
+![Register](screenshots/register.png)
+
+---
+
+### Dashboard
+
+![Dashboard](screenshots/dashboard.png)
+
+---
+
+---
+
+### Uploads
+
+![Uploads](screenshots/upload.png)
+
+---
+
+---
+
+### Analyzing
+
+![Analyzing](screenshots/analyzing.png)
+
+---
+
+### Resume Analysis
+
+![Analysis](screenshots/analysis1.png)
+
+![Analysis](screenshots/analysis2.png)
+
+![Analysis](screenshots/analysis3.png)
+
+![Analysis](screenshots/analysis4.png)
+
+---
+
+### Previous Analyses
+
+![Analyses](screenshots/previous_analysis.png)
+
+---
+
+
 
 ## 🛠️ Tech Stack
 
@@ -38,7 +96,7 @@ The platform combines **Spring Boot**, **React**, **MySQL**, and **Google Gemini
 ### Database
 - MySQL
 
-### AI
+### AI & Document Processing
 - Google Gemini AI
 - Apache PDFBox
 
@@ -54,16 +112,15 @@ The platform combines **Spring Boot**, **React**, **MySQL**, and **Google Gemini
 
 ## 📂 Project Structure
 
-```
-text
+```text
 CareerCompassAI
 │
 ├── career-compass-backend
 ├── career-compass-frontend
 ├── database
 ├── docs
+├── screenshots
 └── README.md
-
 ```
 
 ---
@@ -152,9 +209,9 @@ The project uses environment variables to keep sensitive information secure. Nev
 
 **Durga Devi K**
 
-- GitHub: https://github.com/durga2523
-- LinkedIn: https://www.linkedin.com/in/durgadevi-kandhasamy
-- Email:<durgadevi96260@gmail.com>
+- GitHub: [durga2523](https://github.com/durga2523)
+- LinkedIn: [Durga Devi K](https://www.linkedin.com/in/durgadevi-kandhasamy)
+- Email: <durgadevi96260@gmail.com>
 
 ### 2. Clone URL
 

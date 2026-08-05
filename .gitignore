@@ -9,6 +9,9 @@ career-compass-frontend/dist/
 # Java
 career-compass-backend/target/
 
+# Uploaded Resume Files
+uploads/
+
 # Environment
 .env
 
@@ -21,3 +24,4 @@ Thumbs.db
 
 # Zip Files
 *.zip
+

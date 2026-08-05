@@ -1,97 +1,196 @@
-import { useState} from "react";
+import { useState } from "react";
 import { loginUser } from "../services/authService";
 import { useNavigate } from "react-router-dom";
-function Login(){
+import authContent from "../data/authContent";
+import "../styles/auth.css";
+import Message from "../components/Message";
+
+function Login() {
+
+    const navigate = useNavigate();
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const navigate = useNavigate();
+
+    const [showPassword, setShowPassword] = useState(false);
+    const [loading, setLoading] = useState(false);
+
+
+    const [message, setMessage] = useState("");
+    const [messageType, setMessageType] = useState("");
 
     const handleLogin = async () => {
 
-        if(!email || !password){
-            alert("Please enter both email and password!");
-            return
+        if (loading) return;
+
+        setMessage("");
+        setMessageType("");
+
+        if (!email || !password) {
+
+            setMessage("Please enter both email and password.");
+            setMessageType("error");
+            return;
+
         }
-        const loginData = {
-            email,
-            password
-        };
 
         try {
-            const response = await loginUser(loginData);
 
-            console.log("Response:", response);
-            console.log("Token:", response.token);
+            setLoading(true);
+
+            const response = await loginUser({
+                email,
+                password
+            });
 
             localStorage.setItem("token", response.token);
+            localStorage.setItem("userId", response.userId);
+
+            setMessage("Login Successful!");
+            setMessageType("success");
+
+            setLoading(false);
 
             navigate("/dashboard");
 
-            console.log("Token Saved Successfully!");
-
         } catch (error) {
-            console.error("Error Object:", error);
 
-            if (error.response) {
-                console.log("Status:", error.response.status);
-                console.log("Data:", error.response.data);
-            } else {
-                console.log("Message:", error.message);
-            }
+            console.error(error);
+
+            setMessage("Invalid email or password.");
+            setMessageType("error");
+
+            setLoading(false);
+
         }
+
+    };
+
+    const handleKeyDown = (e) => {
+
+        if (e.key === "Enter") {
+            handleLogin();
+        }
+
     };
 
     return (
-        <div className="container mt-5">
-            <div className="row justify-content-center">
-                <div className="col-md-5">
-                    <div className="card shadow p-4">
-                        <h2 className="text-center mb-4">
-                            Career Compass AI
-                        </h2>
-                        <div className="mb-3">
-                            <label className="form-label">
-                                Email
-                            </label>
 
-                            <input
-                                type="email"
-                                className="form-control"
-                                placeholder="Enter your email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                />
-                        </div>
+        <div className="auth-page">
 
-                        <div className="mb-3">
-                            <label className="form-label">
-                                Password
-                            </label>
+            <div className="auth-left">
+
+                <h1 className="logo">
+                    {authContent.appName}
+                </h1>
+
+                <p className="tagline">
+                    AI Powered Resume Analysis Platform
+                </p>
+
+            </div>
+
+            <div className="auth-right">
+
+                <h2>{authContent.loginTitle}</h2>
+
+                <p className="subtitle">
+                    {authContent.loginSubtitle}
+                </p>
+
+                <Message
+                    type={messageType}
+                    text={message}
+                />
+
+                <div className="form-group">
+
+                    <label>{authContent.email}</label>
+
+                    <input
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        onKeyDown={handleKeyDown}
+                        placeholder="Enter your email"
+                    />
+
+                </div>
+
+                <div className="form-group">
+
+                    <label>{authContent.password}</label>
+
+                    <div className="password-wrapper">
+
                         <input
-                            type="password"
-                            className="form-control"
-                            placeholder="Enter your password"
+                            type={showPassword ? "text" : "password"}
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
+                            onKeyDown={handleKeyDown}
+                            placeholder="Enter your password"
                         />
-                        </div>
 
+                        <span
+                            className="toggle-password"
+                            onClick={() => setShowPassword(!showPassword)}
+                        >
+                            <i
+                                className={`bi ${
+                                    showPassword
+                                        ? "bi-eye-slash"
+                                        : "bi-eye"
+                                }`}
+                            ></i>
+                        </span>
 
-                        <button
-                            className="btn btn-primary w-100"
-                          onClick={handleLogin}>
-                            Login
-                        </button>
-
-                        <p className="text-center mt-3">
-                            Don't have an account? Register
-                        </p>
                     </div>
+
                 </div>
+
+                <button
+                    className="auth-button"
+                    onClick={handleLogin}
+                    disabled={loading}
+                >
+
+                    {loading ? (
+
+                        <>
+
+                            <span
+                                className="spinner-border spinner-border-sm me-2"
+                                role="status"
+                            ></span>
+
+                            Signing In...
+
+                        </>
+
+                    ) : (
+
+                        authContent.login
+
+                    )}
+
+                </button>
+
+                <p className="switch-page">
+
+                    {authContent.noAccount}{" "}
+
+                    <span onClick={() => navigate("/register")}>
+                        Register
+                    </span>
+
+                </p>
+
             </div>
 
         </div>
-    )
+
+    );
+
 }
+
 export default Login;

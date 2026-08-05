@@ -1,0 +1,36 @@
+.history-section{
+
+    max-width:900px;
+    margin:50px auto;
+}
+
+.history-title{
+
+    font-size:34px;
+    margin-bottom:40px;
+}
+
+.history-item{
+
+    padding:20px 0;
+    border-bottom:1px solid #2b2b2b;
+    cursor:pointer;
+    transition:.25s;
+}
+
+.history-item:hover{
+
+    padding-left:15px;
+}
+
+.history-item h5{
+
+    color:white;
+    margin:0;
+}
+
+.history-item p{
+
+    color:#888;
+    margin-top:8px;
+}

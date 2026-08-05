@@ -1,0 +1,66 @@
+/*=====Global Theme =====*/
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #0000;
+    color: #fff;
+    font-family: "Inter", sans-serif ;
+}
+
+/* ===== Dashboard ===== */
+
+.dashboard-container {
+    min-height: 100vh;
+    background-color: #000;
+    color: #fff;
+    transition: 0.3s ease;
+}
+
+/* ===== Main Content ===== */
+.main-content {
+    padding: 90px 50px 30px 50px;
+}
+
+/* ===== Section ===== */
+
+.section {
+    padding: 35px 0;
+    border-bottom: 1px solid #2c2c2c;
+}
+
+.section-title {
+    font-size: 28px;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+/* ===== Paragraph ===== */
+
+.section-description {
+    color: #b5b5b5;
+    font-size: 16px;
+    line-height: 1.7;
+}
+
+/* ===== Button ===== */
+
+.btn-primary-custom {
+    background: #fff;
+    color: #000;
+    border: none;
+    padding: 12px 28px;
+    font-weight: 600;
+    transition: .3s;
+}
+
+.btn-primary-custom:hover {
+    background: #d9d9d9;
+}
+
+/* ===== Divider ===== */
+
+.divider {
+    border: none;
+    border-top: 1px solid #2c2c2c;
+    margin: 0;
+}

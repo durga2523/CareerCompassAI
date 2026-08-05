@@ -1,0 +1,62 @@
+.upload-section{
+    max-width:900px;
+    margin:70px auto;
+    text-align:center;
+}
+
+.upload-heading{
+    font-size:42px;
+    font-weight:700;
+    margin-bottom:15px;
+}
+
+.upload-subtitle{
+    color:#9b9b9b;
+    font-size:17px;
+    margin-bottom:60px;
+}
+
+.upload-area{
+    margin-bottom:35px;
+}
+
+.choose-file-btn{
+    display:inline-block;
+    padding:14px 28px;
+    border:1px solid #555;
+    color:white;
+    cursor:pointer;
+    transition:.3s;
+}
+
+.choose-file-btn:hover{
+    background:white;
+    color:black;
+}
+
+.selected-file{
+    margin-top:25px;
+    color:#bdbdbd;
+    font-size:15px;
+}
+
+.analyze-button{
+    background:white;
+    color:black;
+    border:none;
+    padding:14px 40px;
+    font-size:17px;
+    font-weight:600;
+    cursor:pointer;
+    transition:.3s;
+}
+
+.analyze-button:hover{
+    background:#d8d8d8;
+}
+
+.analyze-button:disabled{
+    background:#444;
+    color:#888;
+    cursor:not-allowed;
+}

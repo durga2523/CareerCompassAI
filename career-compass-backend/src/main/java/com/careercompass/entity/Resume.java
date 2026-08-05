@@ -30,8 +30,7 @@ public class Resume {
     private LocalDateTime uploadedAt;
 
 
-
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 }

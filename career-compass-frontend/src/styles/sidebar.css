@@ -1,0 +1,42 @@
+.sidebar{
+
+    position:fixed;
+    top:72px;
+    left:-240px;
+    width:240px;
+    height:calc(100vh - 72px);
+    background:#000;
+    border-right:1px solid #2a2a2a;
+    transition:left .3s ease;
+    padding:30px 20px;
+    display:flex;
+    flex-direction:column;
+    gap:15px;
+    z-index:999;
+
+}
+
+.sidebar.show{
+
+    left:0;
+
+}
+
+.sidebar-item{
+
+    width:100%;
+    background:transparent;
+    color:#fff;
+    border:none;
+    text-align:left;
+    font-size:17px;
+    padding:12px 0;
+    cursor:pointer;
+
+}
+
+.sidebar-item:hover{
+
+    color:#bdbdbd;
+
+}

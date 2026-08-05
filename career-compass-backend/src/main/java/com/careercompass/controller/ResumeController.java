@@ -1,15 +1,18 @@
 package com.careercompass.controller;
 
-import com.careercompass.dto.*;
+import com.careercompass.dto.AIResumeAnalysisResponse;
+import com.careercompass.dto.JobDescriptionRequest;
+import com.careercompass.dto.JobMatchResponse;
+import com.careercompass.dto.ResumeDetailsResponse;
 import com.careercompass.entity.Resume;
 import com.careercompass.service.ResumeService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/resumes")
@@ -26,6 +29,19 @@ public class ResumeController {
     @GetMapping
     public List<Resume> getAllResumes() {
         return resumeService.getAllResumes();
+    }
+
+    @GetMapping("/user/{userId}")
+    public List<Resume> getResumesByUser(@PathVariable Long userId) {
+        return resumeService.getResumesByUser(userId);
+    }
+
+    @GetMapping("/{id}/analysis")
+    public AIResumeAnalysisResponse getSavedAnalysis(
+            @PathVariable Long id) {
+
+        return resumeService.getSavedAnalysis(id);
+
     }
 
     @GetMapping("/{id}")
@@ -45,9 +61,9 @@ public class ResumeController {
     @PostMapping("/upload")
     public Resume uploadResume(
             @RequestParam("file") MultipartFile file,
-            @RequestParam("userId") Long userId) {
+            HttpServletRequest request) {
 
-        return resumeService.uploadResume(file, userId);
+        return resumeService.uploadResume(file, request);
     }
 
     @GetMapping("/{id}/details")

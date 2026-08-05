@@ -1,0 +1,106 @@
+.analysis-section{
+    max-width:900px;
+    margin: 80px auto;
+    color: white;
+}
+
+.analysis-title{
+    text-align: center;
+    font-size: 40px;
+    font-weight: 700;
+    margin-bottom: 60px;
+}
+
+.analysis-divider{
+    border:none;
+    border-top:1px solid #2d2d2d;
+    margin:50px 0;
+}
+
+.section-title{
+    font-size:24px;
+    font-weight:600;
+    margin-bottom:18px;
+}
+
+.summary{
+    color:#cfcfcf;
+    line-height:1.9;
+}
+
+.skill-chip{
+    display:inline-block;
+    border:1px solid #666;
+    color:white;
+    padding:8px 16px;
+    border-radius:30px;
+    margin:6px;
+    font-size:14px;
+}
+
+.recommendation-list {
+    color: #d8d8d8;
+    line-height: 2;
+}
+
+/* ATS Score */
+
+.ats-container{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    margin:50px 0;
+}
+
+.progress-ring{
+    width:170px;
+    height:170px;
+    border-radius:50%;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    transition:1s;
+}
+.progress-inner{
+
+    width:140px;
+    height:140px;
+
+    background:#000;
+    border-radius:50%;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.ats-score{
+
+    font-size:42px;
+    font-weight:700;
+    color:white;
+}
+
+.ats-title{
+
+    margin-top:18px;
+    color:#ccc;
+    font-size:18px;
+}
+
+@keyframes rotateRing{
+
+    from{
+        transform:rotate(-180deg);
+        opacity:0;
+    }
+
+    to{
+        transform:rotate(0deg);
+        opacity:1;
+    }
+
+}
